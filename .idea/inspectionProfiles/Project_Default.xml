@@ -1,0 +1,42 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="Eslint" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <value>
+          <list size="21">
+            <item index="0" class="java.lang.String" itemvalue="nsglib-mahsan" />
+            <item index="1" class="java.lang.String" itemvalue="pyroute2" />
+            <item index="2" class="java.lang.String" itemvalue="six" />
+            <item index="3" class="java.lang.String" itemvalue="netifaces" />
+            <item index="4" class="java.lang.String" itemvalue="wrapt" />
+            <item index="5" class="java.lang.String" itemvalue="uWSGI" />
+            <item index="6" class="java.lang.String" itemvalue="astroid" />
+            <item index="7" class="java.lang.String" itemvalue="toml" />
+            <item index="8" class="java.lang.String" itemvalue="drf-yasg" />
+            <item index="9" class="java.lang.String" itemvalue="sqlparse" />
+            <item index="10" class="java.lang.String" itemvalue="lazy-object-proxy" />
+            <item index="11" class="java.lang.String" itemvalue="python-iptables" />
+            <item index="12" class="java.lang.String" itemvalue="ipsetpy" />
+            <item index="13" class="java.lang.String" itemvalue="Django" />
+            <item index="14" class="java.lang.String" itemvalue="mccabe" />
+            <item index="15" class="java.lang.String" itemvalue="pylint" />
+            <item index="16" class="java.lang.String" itemvalue="isort" />
+            <item index="17" class="java.lang.String" itemvalue="pytz" />
+            <item index="18" class="java.lang.String" itemvalue="netaddr" />
+            <item index="19" class="java.lang.String" itemvalue="djangorestframework" />
+            <item index="20" class="java.lang.String" itemvalue="whitenoise" />
+          </list>
+        </value>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyPep8NamingInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="ignoredErrors">
+        <list>
+          <option value="N813" />
+        </list>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>
