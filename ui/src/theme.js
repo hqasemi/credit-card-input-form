@@ -13,7 +13,7 @@ export const lightTheme = createTheme({
         MuiFormControl: {
             styleOverrides: {
                 root: {
-                    // paddingBottom: 35,
+                    marginBottom: 20,
                 },
             }
         },
@@ -45,67 +45,18 @@ export const lightTheme = createTheme({
                 },
                 root: {
                     borderRadius: 15,
-                    marginBottom: 35,
                 },
                 // containedPrimary: {
                 //     backgroundColor: "#5d1899",
                 // }
             },
         },
+        MuiFormHelperText: {
+            styleOverrides: {
+                root: {},
+            },
+        },
     }
-    // overrides: {
-    //     // Style sheet name ⚛️
-    //     MuiPaper: {
-    //         root: {
-    //             borderRadius: 15,
-    //         }
-    //     },
-    //     MuiGrid: {
-    //         root: {
-    //             borderRadius: 15,
-    //         },
-    //     },
-    //     MuiFormControl: {
-    //         root: {
-    //             paddingBottom: 8,
-    //         },
-    //     },
-    //     MuiButton: {
-    //         label: {
-    //             fontSize: '1.2rem',
-    //         },
-    //         root: {
-    //             borderRadius: 8,
-    //         },
-    //         containedPrimary: {
-    //             backgroundColor: "#5d1899",
-    //         }
-    //     },
-    //     MuiAlert: {
-    //         root: {
-    //             borderRadius: 8,
-    //         },
-    //         message: {
-    //             fontSize: '0.9rem',
-    //         },
-    //     },
-    //     MuiDataGrid: {
-    //         root: {
-    //             textAlign: "center!important",
-    //         },
-    //         cell: {
-    //             textAlign: "center!important",
-    //         },
-    //         columnHeaderTitle: {
-    //             textAlign: "center!important",
-    //         },
-    //     },
-    //     MuiInput: {
-    //         root: {
-    //             marginBottom: "12px!important"
-    //         }
-    //     }
-    // },
 });
 
 export const darkTheme = createTheme({

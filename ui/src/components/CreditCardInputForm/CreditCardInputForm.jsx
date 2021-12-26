@@ -5,29 +5,22 @@ References:
     3) https://stackoverflow.com/questions/61822733/module-not-found-cant-resolve-date-io-date-fns -> to fix date picker library installation issues
  */
 import FormControl from '@mui/material/FormControl';
-import React, {useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {useFormik} from 'formik';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
-import {Checkbox, Grid, InputLabel, Paper, Select} from "@mui/material";
+import {Checkbox, FormControlLabel, Grid, InputLabel, Paper, Select} from "@mui/material";
 import CreditScoreIcon from '@mui/icons-material/CreditScore';
 
 import {makeStyles} from "@mui/styles";
 import MenuItem from "@mui/material/MenuItem";
 
 import {validationSchema} from "./validationSchema"
+import {startWebsocket} from "../../websocket"
 
-const ws = new WebSocket("ws://127.0.0.1:8081");
-
-const apiCall = {
-    event: "bts:subscribe",
-    data: {channel: "order_book_btcusd"},
-};
-
-ws.onopen = (event) => {
-    console.debug('websocket "onopen"')
-};
-
+export const POST_PAYMENT_INFO = 'POST_PAYMENT_INFO';
+export const POST_PAYMENT_INFO_FAILURE = 'POST_PAYMENT_INFO_FAILURE';
+export const POST_PAYMENT_INFO_SUCCESS = 'POST_PAYMENT_INFO_SUCCESS';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -75,13 +68,14 @@ const ErrorInfo = ({serverResponse}) => {
 }
 
 const CreditCardInputForm = () => {
-    // choices: doing, done
-    const [orderStatus, setOrderStatus] = useState("doing")
+    // socket
+    let ws = useRef(undefined);
+
+    // choices: doing, finished, failed
+    // const [orderStatus, setOrderStatus] = useState("doing")
     const [serverResponse, setServerResponse] = useState({
         event: "",
-        success: false,
         data: {},
-
     })
 
     const formik = useFormik({
@@ -97,12 +91,17 @@ const CreditCardInputForm = () => {
         validationSchema: validationSchema,
         onSubmit: (values) => {
             alert(JSON.stringify(values, null, 2));
-            ws.send(JSON.stringify(apiCall));
+            // ws.send(JSON.stringify(apiCall));
             const messageToServer = {
-                event: "payment_info",
+                event: POST_PAYMENT_INFO,
                 data: values,
             };
-            ws.send(JSON.stringify(messageToServer));
+
+            console.debug("here")
+            if (ws.current.readyState === WebSocket.CLOSED) {
+                configWebsocket()
+            }
+            ws.current.send(JSON.stringify(messageToServer));
         },
     });
 
@@ -116,23 +115,52 @@ const CreditCardInputForm = () => {
         }
     }
 
-    ws.onmessage = function (event) {
-        const json = JSON.parse(event.data);
-        try {
-            if ((json.event = "payment_info")) {
-                setOrderStatus("done")
-                setServerResponse({...serverResponse, ...json})
-                console.debug(json.data)
-            }
-        } catch (err) {
-            setOrderStatus("done")
-            console.error(err);
-            setServerResponse({
-                ...serverResponse,
-                success: false
-            })
+    // reference : https://dev.to/robmarshall/how-to-use-componentwillunmount-with-functional-components-in-react-2a5g
+    useEffect(() => {
+        // Anything in here is fired on component mount.
+        if (ws.current === undefined) {
+            // preventing to start multiple websocket connections to server
+            configWebsocket()
         }
-    };
+        return () => {
+            // Anything in here is fired on component unmount.
+            ws.current.close()
+        }
+    }, [])
+
+    const configWebsocket = () => {
+        console.debug("Configuring a new websocket")
+        ws.current = startWebsocket()
+
+        ws.current.onclose = function () {
+            // connection closed, discard old websocket and create a new one in 1s
+            console.debug('websocket "onclose"')
+            ws.current = null
+            setTimeout(configWebsocket, 1000)
+        }
+
+        ws.current.onopen = (event) => {
+            console.debug('websocket "onopen"')
+        };
+
+        ws.current.addEventListener("message", function (event) {
+            try {
+                const json = JSON.parse(event.data);
+                if ((json.event === POST_PAYMENT_INFO_SUCCESS)) {
+                    // setOrderStatus("done")
+                    setServerResponse({...serverResponse, ...json})
+                    console.debug(json.data)
+                } else if ((json.event === POST_PAYMENT_INFO_FAILURE)) {
+                    // setOrderStatus("done")
+                    setServerResponse({...serverResponse, ...json})
+                    console.error(json.data)
+                }
+            } catch (err) {
+                // setOrderStatus("finished")
+                console.error(`error occurred during parsing server response: ${err}`);
+            }
+        });
+    }
 
     return (
         <>
@@ -156,94 +184,99 @@ const CreditCardInputForm = () => {
                     </Grid>
 
                     <div className={classes.paper}>
-                        {orderStatus === "doing" ?
-                            <form onSubmit={formik.handleSubmit}>
-                                <TextField
-                                    fullWidth
-                                    id="name"
-                                    name="name"
-                                    label="Name"
-                                    value={formik.values.name}
-                                    onChange={formik.handleChange}
-                                    error={formik.touched.name && Boolean(formik.errors.name)}
-                                    helperText={formik.touched.name && formik.errors.name}
-                                    onInput={focusChange}
-                                />
-                                <TextField
-                                    fullWidth
-                                    id="number"
-                                    name="number"
-                                    label="Number"
-                                    value={formik.values.number || ''}
-                                    onChange={formik.handleChange}
-                                    error={formik.touched.number && Boolean(formik.errors.number)}
-                                    helperText={formik.touched.number && formik.errors.number}
-                                    onInput={focusChange}
-                                />
-                                <TextField
-                                    fullWidth
-                                    id="expirationDate"
-                                    name="expirationDate"
-                                    label="Expiration Date (MM/YY)"
-                                    value={formik.values.expirationDate}
-                                    onChange={formik.handleChange}
-                                    error={formik.touched.expirationDate && Boolean(formik.errors.expirationDate)}
-                                    helperText={formik.touched.expirationDate && formik.errors.expirationDate}
-                                    // TODO: fix maxLength
-                                    inputProps={{maxLength: 6,}}
-                                />
-                                <TextField
-                                    fullWidth
-                                    id="amountToBePaid"
-                                    name="amountToBePaid"
-                                    label="Amount to be paid"
-                                    value={formik.values.amountToBePaid}
-                                    onChange={formik.handleChange}
-                                    error={formik.touched.amountToBePaid && Boolean(formik.errors.amountToBePaid)}
-                                    helperText={formik.touched.amountToBePaid && formik.errors.amountToBePaid}
-                                />
+                        {!serverResponse.event && <form onSubmit={formik.handleSubmit}>
+                            <TextField
+                                fullWidth
+                                id="name"
+                                name="name"
+                                label="Name"
+                                value={formik.values.name}
+                                onChange={formik.handleChange}
+                                error={formik.touched.name && Boolean(formik.errors.name)}
+                                helperText={formik.touched.name && formik.errors.name}
+                                onInput={focusChange}
+                            />
+                            <TextField
+                                fullWidth
+                                id="number"
+                                name="number"
+                                label="Number"
+                                value={formik.values.number || ''}
+                                onChange={formik.handleChange}
+                                error={formik.touched.number && Boolean(formik.errors.number)}
+                                helperText={formik.touched.number && formik.errors.number}
+                                onInput={focusChange}
+                            />
+                            <TextField
+                                fullWidth
+                                id="expirationDate"
+                                name="expirationDate"
+                                label="Expiration Date (MM/YY)"
+                                value={formik.values.expirationDate}
+                                onChange={formik.handleChange}
+                                error={formik.touched.expirationDate && Boolean(formik.errors.expirationDate)}
+                                helperText={formik.touched.expirationDate && formik.errors.expirationDate}
+                                // TODO: fix maxLength
+                                inputProps={{maxLength: 6,}}
+                            />
+                            <TextField
+                                fullWidth
+                                id="amountToBePaid"
+                                name="amountToBePaid"
+                                label="Amount to be paid"
+                                value={formik.values.amountToBePaid}
+                                onChange={formik.handleChange}
+                                error={formik.touched.amountToBePaid && Boolean(formik.errors.amountToBePaid)}
+                                helperText={formik.touched.amountToBePaid && formik.errors.amountToBePaid}
+                            />
 
-                                <FormControl fullWidth>
-                                    <InputLabel id="currency-label">Currency</InputLabel>
-                                    <Select
-                                        labelId="currency-label"
-                                        id="currency"
-                                        name="currency"
-                                        value={formik.values.currency}
-                                        label="Currency"
-                                        onChange={formik.handleChange}
-                                        error={formik.touched.currency && Boolean(formik.errors.currency)}
-                                        // TODO: Fix me
-                                        // helperText={formik.touched.currency && formik.errors.currency}
-                                    >
-                                        <MenuItem value={"OMR"}>OMR</MenuItem>
-                                        <MenuItem value={"USD"}>USD</MenuItem>
-                                    </Select>
-                                </FormControl>
-                                <TextField
-                                    fullWidth
-                                    id="securityCode"
-                                    name="securityCode"
-                                    label="Security Code"
-                                    value={formik.values.securityCode || ''}
+                            <FormControl fullWidth>
+                                <InputLabel id="currency-label">Currency</InputLabel>
+                                <Select
+                                    labelId="currency-label"
+                                    id="currency"
+                                    name="currency"
+                                    value={formik.values.currency}
+                                    label="Currency"
                                     onChange={formik.handleChange}
-                                    error={formik.touched.securityCode && Boolean(formik.errors.securityCode)}
-                                    helperText={formik.touched.securityCode && formik.errors.securityCode}
-                                />
-                                <Checkbox
-                                    checked={formik.values.areCardDetailsSave}
-                                    onChange={() => formik.setFieldValue("areCardDetailsSave",
-                                        !formik.values.areCardDetailsSave)}
-                                    inputProps={{'aria-label': 'controlled'}}
-                                />
-                                <Button color="primary" variant="contained" fullWidth type="submit">
-                                    Submit
-                                </Button>
-                            </form>
-                            : orderStatus === "done" && serverResponse && serverResponse.success ?
-                                <SuccessInfo serverResponse={serverResponse}/> :
-                                <ErrorInfo serverResponse={serverResponse}/>
-                        }
+                                    error={formik.touched.currency && Boolean(formik.errors.currency)}
+                                    // TODO: Fix me
+                                    // helperText={formik.touched.currency && formik.errors.currency}
+                                >
+                                    <MenuItem value={"OMR"}>OMR</MenuItem>
+                                    <MenuItem value={"USD"}>USD</MenuItem>
+                                </Select>
+                            </FormControl>
+                            <TextField
+                                fullWidth
+                                id="securityCode"
+                                name="securityCode"
+                                label="Security Code"
+                                value={formik.values.securityCode || ''}
+                                onChange={formik.handleChange}
+                                error={formik.touched.securityCode && Boolean(formik.errors.securityCode)}
+                                helperText={formik.touched.securityCode && formik.errors.securityCode}
+                            />
+
+                            <FormControlLabel
+                                // reference : https://stackoverflow.com/questions/48910869/material-ui-checkbox-label-is-missing
+                                control={
+                                    <Checkbox
+                                        checked={formik.values.areCardDetailsSave}
+                                        onChange={() => formik.setFieldValue("areCardDetailsSave",
+                                            !formik.values.areCardDetailsSave)}
+                                        inputProps={{'aria-label': 'controlled'}}
+                                    />
+                                }
+                                label="Save card"/>
+                            <Button color="primary" variant="contained" fullWidth type="submit">
+                                Submit
+                            </Button>
+                        </form>}
+                        {serverResponse && serverResponse.event === POST_PAYMENT_INFO_SUCCESS &&
+                            <SuccessInfo serverResponse={serverResponse}/>}
+                        {serverResponse && serverResponse.event === POST_PAYMENT_INFO_FAILURE &&
+                            <ErrorInfo serverResponse={serverResponse}/>}
                     </div>
                 </Grid>
             </Grid>
