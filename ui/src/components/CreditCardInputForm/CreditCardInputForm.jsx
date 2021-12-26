@@ -17,6 +17,7 @@ import MenuItem from "@mui/material/MenuItem";
 
 import {validationSchema} from "./validationSchema"
 import {startWebsocket} from "../../websocket"
+import AutorenewIcon from '@mui/icons-material/Autorenew';
 
 export const POST_PAYMENT_INFO = 'POST_PAYMENT_INFO';
 export const POST_PAYMENT_INFO_FAILURE = 'POST_PAYMENT_INFO_FAILURE';
@@ -63,7 +64,6 @@ const ErrorInfo = ({serverResponse}) => {
             <h2>Error during payment</h2>
             <p>More info: {serverResponse.data.error ?? "Unknown Issue"}</p>
         </div>
-
     )
 }
 
@@ -89,9 +89,9 @@ const CreditCardInputForm = () => {
             securityCode: 0,
         },
         validationSchema: validationSchema,
-        onSubmit: (values) => {
-            alert(JSON.stringify(values, null, 2));
-            // ws.send(JSON.stringify(apiCall));
+        onSubmit: (values, {setSubmitting, resetForm}) => {
+            // alert(JSON.stringify(values, null, 2));
+
             const messageToServer = {
                 event: POST_PAYMENT_INFO,
                 data: values,
@@ -99,9 +99,12 @@ const CreditCardInputForm = () => {
 
             console.debug("here")
             if (ws.current.readyState === WebSocket.CLOSED) {
-                configWebsocket()
+                configureWebsocket()
             }
             ws.current.send(JSON.stringify(messageToServer));
+
+            // Make sure that for is clear when we click on rePaymentButton
+            resetForm()
         },
     });
 
@@ -120,7 +123,7 @@ const CreditCardInputForm = () => {
         // Anything in here is fired on component mount.
         if (ws.current === undefined) {
             // preventing to start multiple websocket connections to server
-            configWebsocket()
+            configureWebsocket()
         }
         return () => {
             // Anything in here is fired on component unmount.
@@ -128,7 +131,7 @@ const CreditCardInputForm = () => {
         }
     }, [])
 
-    const configWebsocket = () => {
+    const configureWebsocket = () => {
         console.debug("Configuring a new websocket")
         ws.current = startWebsocket()
 
@@ -136,7 +139,7 @@ const CreditCardInputForm = () => {
             // connection closed, discard old websocket and create a new one in 1s
             console.debug('websocket "onclose"')
             ws.current = null
-            setTimeout(configWebsocket, 1000)
+            setTimeout(configureWebsocket, 1000)
         }
 
         ws.current.onopen = (event) => {
@@ -162,6 +165,10 @@ const CreditCardInputForm = () => {
         });
     }
 
+    const onRepaymentClickHandler = () => {
+        setServerResponse({...serverResponse, event: ""})
+    }
+
     return (
         <>
             <Grid container
@@ -171,7 +178,11 @@ const CreditCardInputForm = () => {
                   justifyContent={"center"}
                   justify="center">
 
-                <Grid item xs={12} sm={12} md={4} component={Paper} elevation={6}
+                <Grid item
+                      xs={11}
+                      sm={11} md={6}
+                      component={Paper}
+                      elevation={6}
                       className={classes.whiteTransparentBG}>
                     <Grid container
                           alignItems="center"
@@ -179,7 +190,10 @@ const CreditCardInputForm = () => {
                           justify="center">
                         <Grid item>
                             <CreditScoreIcon color={"primary"} style={{fontSize: "54px"}}/>
-
+                        </Grid>
+                        <Grid item style={{marginRight:"0px", marginLeft:"auto"}}>
+                            {serverResponse && serverResponse.event &&
+                                < AutorenewIcon onClick={onRepaymentClickHandler}/>}
                         </Grid>
                     </Grid>
 
@@ -219,34 +233,44 @@ const CreditCardInputForm = () => {
                                 // TODO: fix maxLength
                                 inputProps={{maxLength: 6,}}
                             />
-                            <TextField
-                                fullWidth
-                                id="amountToBePaid"
-                                name="amountToBePaid"
-                                label="Amount to be paid"
-                                value={formik.values.amountToBePaid}
-                                onChange={formik.handleChange}
-                                error={formik.touched.amountToBePaid && Boolean(formik.errors.amountToBePaid)}
-                                helperText={formik.touched.amountToBePaid && formik.errors.amountToBePaid}
-                            />
+                            <Grid container
+                                  alignItems="center"
+                                  justifyContent={"center"}
+                                  justify="center">
+                                <Grid item xs={8} sm={8} md={8} elevation={6}>
+                                    <TextField
+                                        fullWidth
+                                        id="amountToBePaid"
+                                        name="amountToBePaid"
+                                        label="Amount to be paid"
+                                        value={formik.values.amountToBePaid}
+                                        onChange={formik.handleChange}
+                                        error={formik.touched.amountToBePaid && Boolean(formik.errors.amountToBePaid)}
+                                        helperText={formik.touched.amountToBePaid && formik.errors.amountToBePaid}
+                                    />
+                                </Grid>
+                                <Grid item xs={4} sm={4} md={4} elevation={6}>
+                                    <FormControl fullWidth>
+                                        <InputLabel id="currency-label">Currency</InputLabel>
+                                        <Select
+                                            labelId="currency-label"
+                                            id="currency"
+                                            name="currency"
+                                            value={formik.values.currency}
+                                            label="Currency"
+                                            onChange={formik.handleChange}
+                                            error={formik.touched.currency && Boolean(formik.errors.currency)}
+                                            // TODO: Fix me
+                                            // helperText={formik.touched.currency && formik.errors.currency}
+                                        >
+                                            <MenuItem value={"OMR"}>OMR</MenuItem>
+                                            <MenuItem value={"USD"}>USD</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                </Grid>
+                            </Grid>
 
-                            <FormControl fullWidth>
-                                <InputLabel id="currency-label">Currency</InputLabel>
-                                <Select
-                                    labelId="currency-label"
-                                    id="currency"
-                                    name="currency"
-                                    value={formik.values.currency}
-                                    label="Currency"
-                                    onChange={formik.handleChange}
-                                    error={formik.touched.currency && Boolean(formik.errors.currency)}
-                                    // TODO: Fix me
-                                    // helperText={formik.touched.currency && formik.errors.currency}
-                                >
-                                    <MenuItem value={"OMR"}>OMR</MenuItem>
-                                    <MenuItem value={"USD"}>USD</MenuItem>
-                                </Select>
-                            </FormControl>
+
                             <TextField
                                 fullWidth
                                 id="securityCode"
@@ -274,9 +298,9 @@ const CreditCardInputForm = () => {
                             </Button>
                         </form>}
                         {serverResponse && serverResponse.event === POST_PAYMENT_INFO_SUCCESS &&
-                            <SuccessInfo serverResponse={serverResponse}/>}
+                            <SuccessInfo serverResponse={serverResponse} setServerResponse={setServerResponse}/>}
                         {serverResponse && serverResponse.event === POST_PAYMENT_INFO_FAILURE &&
-                            <ErrorInfo serverResponse={serverResponse}/>}
+                            <ErrorInfo serverResponse={serverResponse} setServerResponse={setServerResponse}/>}
                     </div>
                 </Grid>
             </Grid>
