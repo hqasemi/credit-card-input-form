@@ -1,21 +1,19 @@
 import './App.css';
-// import CreditCardInputForm from "./components/CreditCardInputForm";
 import 'react-credit-cards/es/styles-compiled.css';
-import WithMaterialUI from "./components/TmpComponent";
 import {lightTheme,} from "./theme";
 import {CssBaseline, ThemeProvider} from "@mui/material";
-import {useState} from "react";
+import CreditCardInputForm from "./components/CreditCardInputForm/CreditCardInputForm";
 
 
 function App() {
-    const [isThemeLight, setIsThemeLight] = useState(true);
+    // const [isThemeLight, setIsThemeLight] = useState(true);
     return (
+        // TODO: Support dark theme.
         // <ThemeProvider theme={isThemeLight ? lightTheme : darkTheme}>
         <ThemeProvider theme={lightTheme}>
             <CssBaseline/>
-            <WithMaterialUI/>
+            <CreditCardInputForm/>
         </ThemeProvider>
-
     );
 }
 

@@ -13,7 +13,7 @@ export const lightTheme = createTheme({
         MuiFormControl: {
             styleOverrides: {
                 root: {
-                    paddingBottom: 35,
+                    // paddingBottom: 35,
                 },
             }
         },
@@ -45,6 +45,7 @@ export const lightTheme = createTheme({
                 },
                 root: {
                     borderRadius: 15,
+                    marginBottom: 35,
                 },
                 // containedPrimary: {
                 //     backgroundColor: "#5d1899",
