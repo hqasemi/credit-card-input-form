@@ -17,11 +17,17 @@ export const lightTheme = createTheme({
                 },
             }
         },
+        MuiFormControlLabel: {
+            styleOverrides: {
+                root: {
+                    marginLeft: 0,
+                },
+            }
+        },
         MuiPaper: {
             styleOverrides: {
                 root: {
                     borderRadius: 15,
-                    padding: "30px 30px 55px",
                 }
             }
         },

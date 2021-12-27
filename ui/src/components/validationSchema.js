@@ -54,9 +54,15 @@ function doesNumberHasAtMostTwoDecimalPlaces(val) {
 }
 
 export const validationSchema = yup.object({
-        name: yup
-            .string("Enter the name")
-            .required("Name is required"),
+        cardHolderName: yup
+            .string("Enter the Card holder name")
+            .required("Card holder name is required"),
+        cardNumber: yup
+            .number('Enter your Card number')
+            .required('Card number is required')
+            //reference: https://stackoverflow.com/questions/49886881/validation-using-yup-to-check-string-or-number-length
+            .test('len', 'Card number needs to be exactly 16 digits', val => val.toString().length === 16)
+            .typeError("Card number is not valid"),
         expirationDate: yup
             .date()
             .required('Expiration date is required')
@@ -65,21 +71,29 @@ export const validationSchema = yup.object({
                 (value, info) => {
                     const originalValue = info.originalValue
                     const isValid = /^\d\d\/\d\d$/.test(originalValue)
+
+                    const parts = originalValue && originalValue.split("/")
+                    if (!parts) {
+                        return isValid
+                    }
+
+                    const mm = Number(parts[0])
+                    if (mm > 12) {
+                        return false
+                    }
+
                     return isValid
                 })
             // .min(new Date('01-01-2019')),
             .min(new Date((new Date()).setDate((new Date()).getDate() + 30)),
                 "The expiration date should be 1 month later or more.")
-            .transform(parseDateString),
-        number: yup
-            .number('Enter your Card Number')
-            .required('Card Number is required')
-            //reference: https://stackoverflow.com/questions/49886881/validation-using-yup-to-check-string-or-number-length
-            .test('len', 'Card Number needs to be exactly 16 digits', val => val.toString().length === 16),
+            .transform(parseDateString)
+            .typeError("Date format is not valid"),
         securityCode: yup
-            .number('Enter your Security Code')
-            .required('Security Code is required')
-            .test('len', 'Security Code needs to be exactly 3 digits', val => val.toString().length === 3),
+            .number('Enter your Security code')
+            .required('Security code is required')
+            .test('len', 'Security code needs to be exactly 3 digits', val => val.toString().length === 3)
+            .typeError("Security Code is not valid"),
         amountToBePaid: yup
             .number('Enter the amount that you want to be paid')
             .required('Amount is required')
@@ -93,7 +107,7 @@ export const validationSchema = yup.object({
                         .test('len fds', 'Amount needs to be a digit with at most two decimal places',
                             doesNumberHasAtMostTwoDecimalPlaces
                         )
-                    // .typeError('End Date is required')
+                        .typeError("Amount is not valid")
                 }
                 if (currency === "USD") {
                     return Yup
@@ -104,9 +118,8 @@ export const validationSchema = yup.object({
                         .test('len fds', 'Amount needs to be a digit with at most two decimal places',
                             doesNumberHasAtMostTwoDecimalPlaces
                         )
-                    // .typeError('End Date is required')
+                        .typeError("Amount is not valid")
                 }
-
             })
     }
 )

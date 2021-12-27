@@ -2,7 +2,7 @@ import './App.css';
 import 'react-credit-cards/es/styles-compiled.css';
 import {lightTheme,} from "./theme";
 import {CssBaseline, ThemeProvider} from "@mui/material";
-import CreditCardInputForm from "./components/CreditCardInputForm/CreditCardInputForm";
+import CreditCardInputForm from "./components/CreditCardInputForm";
 
 
 function App() {

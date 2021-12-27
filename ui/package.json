@@ -20,6 +20,7 @@
     "react": "^17.0.2",
     "react-credit-cards": "^0.8.3",
     "react-dom": "^17.0.2",
+    "react-input-mask": "^2.0.4",
     "react-loading": "^2.0.3",
     "react-redux": "^7.2.6",
     "react-scripts": "5.0.0",
