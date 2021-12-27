@@ -1,6 +1,9 @@
 import {WebSocketServer} from 'ws';
 
 const wss = new WebSocketServer({port: 8081});
+
+export const SERVER_HELLO = 'SERVER_HELLO';
+
 export const POST_PAYMENT_INFO = 'POST_PAYMENT_INFO';
 export const POST_PAYMENT_INFO_FAILURE = 'POST_PAYMENT_INFO_FAILURE';
 export const POST_PAYMENT_INFO_SUCCESS = 'POST_PAYMENT_INFO_SUCCESS';
@@ -38,7 +41,10 @@ wss.on('connection', function connection(ws) {
         }
     });
 
-    ws.send('something from server');
+    ws.onopen = (event) => {
+        console.debug('Server "onopen"')
+        ws.send(JSON.stringify({"event": SERVER_HELLO}));
+    };
 });
 
 const convertCurrency = (data) => data.currency === "USD" ? data.amountToBePaid * 0.39 : data.amountToBePaid

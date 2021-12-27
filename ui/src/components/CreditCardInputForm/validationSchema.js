@@ -4,6 +4,7 @@
  * If any invalid data enters by users, user will be notified onsubmit.
  */
 import * as yup from "yup";
+import * as Yup from "yup";
 
 /**
  *  Gets yy/MM format and convert it to a Date object
@@ -18,6 +19,38 @@ function parseDateString(value, originalValue) {
     const yy = parts[1]
     //e.g: 22/12 -> 12 01 2022 -> Thu Dec 01 2022 00:00:00
     return new Date(`${mm} 01 20${yy}`)
+}
+
+function doesNumberHasAtMostTwoDecimalPlaces(val) {
+
+    if (!val) {
+        return false
+    }
+    let parts = val.toString().split(".")
+
+    // e.g.: 789.
+    // TODO: it doesn't work, ask whether it is important to handle this case or not?
+    if (val.toString().includes(".") && parts.length === 1) {
+        console.log("false")
+        return false
+    }
+
+    // e.g.: empty input
+    if (parts.length === 0) {
+        return false
+    }
+
+    // e.g.: 12
+    if (parts.length === 1 && Math.floor(val) === val) {
+        return true
+    }
+
+    let decimalPart = parts[1]
+    // e.g. 12.09
+    if (decimalPart) {
+        return decimalPart.length <= 2;
+    }
+    return false
 }
 
 export const validationSchema = yup.object({
@@ -50,39 +83,30 @@ export const validationSchema = yup.object({
         amountToBePaid: yup
             .number('Enter the amount that you want to be paid')
             .required('Amount is required')
-            .min(0.01, 'Amount needs to be more than 0.01')
-            .max(999.99, 'Amount needs to be less than 1000.00')
-            .test('len fds', 'Amount needs to be a digit with at most two decimal places',
-                val => {
-                    if (!val) {
-                        return false
-                    }
-                    let parts = val.toString().split(".")
-
-                    // e.g.: 789.
-                    // TODO: it doesn't work, ask whether it is important to handle this case or not?
-                    if (val.toString().includes(".") && parts.length === 1) {
-                        console.log("false")
-                        return false
-                    }
-
-                    // e.g.: empty input
-                    if (parts.length === 0) {
-                        return false
-                    }
-
-                    // e.g.: 12
-                    if (parts.length === 1 && Math.floor(val) === val) {
-                        return true
-                    }
-
-                    let decimalPart = parts[1]
-                    // e.g. 12.09
-                    if (decimalPart) {
-                        return decimalPart.length <= 2;
-                    }
-                    return false
+            .when('currency', (currency) => {
+                if (currency === "OMR") {
+                    return Yup
+                        .number('Enter the amount that you want to be paid')
+                        .required('Amount is required')
+                        .min(0.01, `Amount needs to be more than 0.01 ${currency}`)
+                        .max(999.99, `Amount needs to be less than 1000.00 ${currency}`)
+                        .test('len fds', 'Amount needs to be a digit with at most two decimal places',
+                            doesNumberHasAtMostTwoDecimalPlaces
+                        )
+                    // .typeError('End Date is required')
                 }
-            ),
+                if (currency === "USD") {
+                    return Yup
+                        .number('Enter the amount that you want to be paid')
+                        .required('Amount is required')
+                        .min(0.04, `Amount needs to be more than 0.04 ${currency}`)
+                        .max(2564.06, `Amount needs to be less than 2564.06 ${currency}`)
+                        .test('len fds', 'Amount needs to be a digit with at most two decimal places',
+                            doesNumberHasAtMostTwoDecimalPlaces
+                        )
+                    // .typeError('End Date is required')
+                }
+
+            })
     }
 )

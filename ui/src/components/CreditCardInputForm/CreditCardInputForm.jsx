@@ -4,24 +4,25 @@ References:
     2) https://codesandbox.io/s/formik-material-ui-date-picker-with-yup-validate-3odn7?file=/src/index.js:239-389
     3) https://stackoverflow.com/questions/61822733/module-not-found-cant-resolve-date-io-date-fns -> to fix date picker library installation issues
  */
-import FormControl from '@mui/material/FormControl';
 import React, {useEffect, useRef, useState} from 'react';
 import {useFormik} from 'formik';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
-import {Checkbox, FormControlLabel, Grid, InputLabel, Paper, Select} from "@mui/material";
+import {ButtonGroup, Checkbox, FormControlLabel, Grid, Paper} from "@mui/material";
 import CreditScoreIcon from '@mui/icons-material/CreditScore';
 
 import {makeStyles} from "@mui/styles";
-import MenuItem from "@mui/material/MenuItem";
 
 import {validationSchema} from "./validationSchema"
 import {startWebsocket} from "../../websocket"
 import AutorenewIcon from '@mui/icons-material/Autorenew';
 
-export const POST_PAYMENT_INFO = 'POST_PAYMENT_INFO';
-export const POST_PAYMENT_INFO_FAILURE = 'POST_PAYMENT_INFO_FAILURE';
-export const POST_PAYMENT_INFO_SUCCESS = 'POST_PAYMENT_INFO_SUCCESS';
+const POST_PAYMENT_INFO = 'POST_PAYMENT_INFO';
+const POST_PAYMENT_INFO_FAILURE = 'POST_PAYMENT_INFO_FAILURE';
+const POST_PAYMENT_INFO_SUCCESS = 'POST_PAYMENT_INFO_SUCCESS';
+
+const WEBSOCKET_RECONNECT_INTERVAL_IN_MS = process.env.REACT_APP_WEBSOCKET_RECONNECT_INTERVAL_IN_MS
+
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -44,24 +45,28 @@ const useStyles = makeStyles((theme) => ({
     },
     whiteTransparentBG: {
         backgroundColor: "#ffffffcf",
-    }
+    },
+    stickRight: {
+        marginRight: "0px!important",
+        marginLeft: "auto!important",
+    },
 }));
 
 const SuccessInfo = ({serverResponse}) => {
     return (
         <div>
-            <h2>Your payment has been successfully done</h2>
-            <p>Amount: {serverResponse.data.amountToBePaid} R.O.</p>
-            <p>Card Number: {serverResponse.data.number}</p>
-            <p>Card Holder Name: {serverResponse.data.name}</p>
-            <p>Card Expiration Date: {serverResponse.data.expirationDate}</p>
+            <h2 style={{"textDecoration": "underline"}}>Your payment has been successfully done</h2>
+            <p><strong>Amount:</strong> {serverResponse.data.amountToBePaid} {serverResponse.data.currency}</p>
+            <p><strong>Card Number:</strong> {serverResponse.data.number}</p>
+            <p><strong>Card Holder Name:</strong> {serverResponse.data.name}</p>
+            <p><strong>Card Expiration Date:</strong> {serverResponse.data.expirationDate}</p>
         </div>
     )
 }
 const ErrorInfo = ({serverResponse}) => {
     return (
         <div>
-            <h2>Error during payment</h2>
+            <h2 style={{"textDecoration": "underline", "color":"#c52e2e"}}>Error during payment</h2>
             <p>More info: {serverResponse.data.error ?? "Unknown Issue"}</p>
         </div>
     )
@@ -77,6 +82,7 @@ const CreditCardInputForm = () => {
         event: "",
         data: {},
     })
+
 
     const formik = useFormik({
         initialValues: {
@@ -97,7 +103,6 @@ const CreditCardInputForm = () => {
                 data: values,
             };
 
-            console.debug("here")
             if (ws.current.readyState === WebSocket.CLOSED) {
                 configureWebsocket()
             }
@@ -135,11 +140,12 @@ const CreditCardInputForm = () => {
         console.debug("Configuring a new websocket")
         ws.current = startWebsocket()
 
+        // TODO: move onclose function to `src/websocket.js`
         ws.current.onclose = function () {
             // connection closed, discard old websocket and create a new one in 1s
-            console.debug('websocket "onclose"')
+            console.debug('websocket has been closed.')
             ws.current = null
-            setTimeout(configureWebsocket, 1000)
+            setTimeout(configureWebsocket, WEBSOCKET_RECONNECT_INTERVAL_IN_MS)
         }
 
         ws.current.onopen = (event) => {
@@ -184,26 +190,36 @@ const CreditCardInputForm = () => {
                       component={Paper}
                       elevation={6}
                       className={classes.whiteTransparentBG}>
-                    <Grid container
-                          alignItems="center"
-                          justifyContent={"center"}
-                          justify="center">
-                        <Grid item>
-                            <CreditScoreIcon color={"primary"} style={{fontSize: "54px"}}/>
-                        </Grid>
-                        <Grid item style={{marginRight:"0px", marginLeft:"auto"}}>
-                            {serverResponse && serverResponse.event &&
-                                < AutorenewIcon onClick={onRepaymentClickHandler}/>}
-                        </Grid>
-                    </Grid>
+
 
                     <div className={classes.paper}>
+                        {/*                        <Grid*/}
+                        {/*    container*/}
+                        {/*    spacing={0}*/}
+                        {/*    direction="column"*/}
+                        {/*    alignItems="center"*/}
+                        {/*    justifyContent="center"*/}
+                        {/*    // style={{minHeight: '100vh'}}*/}
+                        {/*>*/}
+                        {/*    <Grid item xs={3} class={"ButtonGroupContainer"}>*/}
+                        <Grid container
+                              alignItems="center"
+                              justifyContent={"center"}
+                              justify="center">
+                            <Grid item>
+                                <CreditScoreIcon color={"primary"} style={{fontSize: "54px"}}/>
+                            </Grid>
+                            <Grid item className={serverResponse && serverResponse.event && classes.stickRight}>
+                                {serverResponse && serverResponse.event &&
+                                    < AutorenewIcon onClick={onRepaymentClickHandler} color={"primary"}/>}
+                            </Grid>
+                        </Grid>
                         {!serverResponse.event && <form onSubmit={formik.handleSubmit}>
                             <TextField
                                 fullWidth
                                 id="name"
                                 name="name"
-                                label="Name"
+                                label="Card holder name"
                                 value={formik.values.name}
                                 onChange={formik.handleChange}
                                 error={formik.touched.name && Boolean(formik.errors.name)}
@@ -214,7 +230,10 @@ const CreditCardInputForm = () => {
                                 fullWidth
                                 id="number"
                                 name="number"
-                                label="Number"
+                                label="Card number"
+                                inputProps={{
+                                    maxLength: 16,
+                                }}
                                 value={formik.values.number || ''}
                                 onChange={formik.handleChange}
                                 error={formik.touched.number && Boolean(formik.errors.number)}
@@ -225,62 +244,77 @@ const CreditCardInputForm = () => {
                                 fullWidth
                                 id="expirationDate"
                                 name="expirationDate"
-                                label="Expiration Date (MM/YY)"
+                                label="Expiration date (MM/YY)"
                                 value={formik.values.expirationDate}
                                 onChange={formik.handleChange}
                                 error={formik.touched.expirationDate && Boolean(formik.errors.expirationDate)}
                                 helperText={formik.touched.expirationDate && formik.errors.expirationDate}
                                 // TODO: fix maxLength
-                                inputProps={{maxLength: 6,}}
+                                inputProps={{maxLength: 5,}}
                             />
-                            <Grid container
-                                  alignItems="center"
-                                  justifyContent={"center"}
-                                  justify="center">
-                                <Grid item xs={8} sm={8} md={8} elevation={6}>
-                                    <TextField
-                                        fullWidth
-                                        id="amountToBePaid"
-                                        name="amountToBePaid"
-                                        label="Amount to be paid"
-                                        value={formik.values.amountToBePaid}
-                                        onChange={formik.handleChange}
-                                        error={formik.touched.amountToBePaid && Boolean(formik.errors.amountToBePaid)}
-                                        helperText={formik.touched.amountToBePaid && formik.errors.amountToBePaid}
-                                    />
-                                </Grid>
-                                <Grid item xs={4} sm={4} md={4} elevation={6}>
-                                    <FormControl fullWidth>
-                                        <InputLabel id="currency-label">Currency</InputLabel>
-                                        <Select
-                                            labelId="currency-label"
-                                            id="currency"
-                                            name="currency"
-                                            value={formik.values.currency}
-                                            label="Currency"
-                                            onChange={formik.handleChange}
-                                            error={formik.touched.currency && Boolean(formik.errors.currency)}
-                                            // TODO: Fix me
-                                            // helperText={formik.touched.currency && formik.errors.currency}
-                                        >
-                                            <MenuItem value={"OMR"}>OMR</MenuItem>
-                                            <MenuItem value={"USD"}>USD</MenuItem>
-                                        </Select>
-                                    </FormControl>
-                                </Grid>
-                            </Grid>
-
-
                             <TextField
                                 fullWidth
+                                inputProps={{
+                                    maxLength: 3,
+                                }}
+                                type="password"
                                 id="securityCode"
                                 name="securityCode"
-                                label="Security Code"
+                                label="Security code"
                                 value={formik.values.securityCode || ''}
                                 onChange={formik.handleChange}
                                 error={formik.touched.securityCode && Boolean(formik.errors.securityCode)}
                                 helperText={formik.touched.securityCode && formik.errors.securityCode}
                             />
+                            <Grid
+                                container
+                                spacing={0}
+                                direction="column"
+                                alignItems="center"
+                                justifyContent="center"
+                                // style={{minHeight: '100vh'}}
+                            >
+                                <Grid item xs={3} class={"ButtonGroupContainer"}>
+                                    <ButtonGroup>
+                                        <Button
+                                            color="primary"
+                                            variant={formik.values.currency === "OMR" ? "contained" : "standard"}
+                                            className="Form_active__1W_zB"
+                                            onClick={() => {
+                                                formik.setFieldValue("currency", "OMR");
+                                            }}
+                                        >
+                                            OMR
+                                        </Button>
+                                        <Button
+                                            color="primary"
+                                            variant={formik.values.currency !== "OMR" ? "contained" : "standard"}
+                                            className=""
+                                            onClick={() => {
+                                                formik.setFieldValue("currency", "USD");
+                                            }}
+                                        >
+                                            USD
+                                        </Button>
+                                    </ButtonGroup>
+                                </Grid>
+
+                            </Grid>
+
+                            <TextField
+                                fullWidth
+                                id="amountToBePaid"
+                                name="amountToBePaid"
+                                label={`Amount to be paid (${formik.values.currency})`}
+                                value={formik.values.amountToBePaid}
+                                onChange={formik.handleChange}
+                                error={formik.touched.amountToBePaid && Boolean(formik.errors.amountToBePaid)}
+                                helperText={formik.touched.amountToBePaid && formik.errors.amountToBePaid}
+                                inputProps={{
+                                    maxLength: 6,
+                                }}
+                            />
+
 
                             <FormControlLabel
                                 // reference : https://stackoverflow.com/questions/48910869/material-ui-checkbox-label-is-missing

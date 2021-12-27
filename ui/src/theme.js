@@ -21,9 +21,20 @@ export const lightTheme = createTheme({
             styleOverrides: {
                 root: {
                     borderRadius: 15,
-                    padding: 12,
+                    padding: "30px 30px 55px",
                 }
             }
+        },
+        MuiButtonGroup: {
+            styleOverrides: {
+                root: {
+                    border: "1px solid #5d1899",
+                    borderRadius: 15,
+                },
+                // containedPrimary: {
+                //     backgroundColor: "#5d1899",
+                // }
+            },
         },
         MuiButton: {
             styleOverrides: {
@@ -32,6 +43,9 @@ export const lightTheme = createTheme({
                 },
                 root: {
                     borderRadius: 15,
+                    padding: "10px 15px",
+                    fontWeight: 700,
+                    transition: "background-color .2s ease-in-out",
                 },
                 // containedPrimary: {
                 //     backgroundColor: "#5d1899",
@@ -56,6 +70,20 @@ export const lightTheme = createTheme({
                 root: {},
             },
         },
+        MuiGrid: {
+            styleOverrides: {
+                container: {
+                    marginBottom: 20,
+                },
+            },
+        },
+        // MuiSvgIcon: {
+        //     styleOverrides: {
+        //         root: {
+        //             color: "primary"
+        //         },
+        //     },
+        // }
     }
 });
 

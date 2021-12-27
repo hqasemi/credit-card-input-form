@@ -1,47 +1,26 @@
-// let ws = null
-//
-//
-// class WebSocketSingleton {
-//     constructor() {
-//         // TODO: read url from env
-//         ws = new WebSocket('ws://localhost:8081')
-//         // this.#ws.onmessage = function (e) {
-//         //     console.log('websocket message event:', e)
-//         // }
-//
-//         ws.onclose = function () {
-//             // connection closed, discard old websocket and create a new one in 5s
-//             ws = null
-//             setTimeout(startWebsocket, 5000)
-//         }
-//     }
-//
-//     get ws() {
-//         return ws;
-//     }
-//
-// }
-//
-
-//
-// export const websocket_obj = new WebSocketSingleton()
+const WEBSOCKET_SERVER_ADDR = process.env.REACT_APP_WEBSOCKET_SERVER_ADDR
 
 let ws = null
 
+/**
+ * Connects to the server that is given using env (REACT_APP_WEBSOCKET_SERVER_ADDR)
+ * @returns {WebSocket}
+ */
 export function startWebsocket() {
-    console.debug("starting a websocket connection")
-    ws = new WebSocket('ws://localhost:8081')
+
+    console.debug(`Trying to start a websocket connection to "${WEBSOCKET_SERVER_ADDR}"`)
+    ws = new WebSocket(WEBSOCKET_SERVER_ADDR)
 
     ws.onmessage = function (e) {
         console.log('websocket message event:', e)
     }
 
-    ws.onclose = function () {
-        // connection closed, discard old websocket and create a new one in 5s
-        ws = null
-        setTimeout(startWebsocket, 5000)
-    }
+    // ws.onclose = function () {
+    //     console.debug('websocket "onclose"')
+    //     // connection closed, discard old websocket and create a new one in 5s
+    //     ws = null
+    //     setTimeout(startWebsocket, WEBSOCKET_RECONNECT_INTERVAL_IN_MS)
+    // }
     return ws
 }
 
-// export startWebsocket();
