@@ -5,7 +5,7 @@ This project is a simple credit card input form
 ## Assumptions:
 
 - Client-Server connection is websocket.
-- If the last 1 digit of the card is ‘5’ then the result is always failure, otherwise success.
+- If the last digit of the card is ‘5’ then the result is always failure, otherwise success.
 
 ## How to run:
 
