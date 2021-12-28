@@ -69,7 +69,7 @@ body {
             }
         }
     }
-    $particleBaseSize: 8;
+    $particleBaseSize: 20;
     @for $i from 1 through $particleNum {
         &:nth-child(#{$i}) {
             $circleSize: random($particleBaseSize);

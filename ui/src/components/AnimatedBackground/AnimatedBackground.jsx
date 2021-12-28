@@ -8,7 +8,7 @@ export const AnimatedBackground = () => {
     return (
         <div className="container">
             <img className="background" src={skyBGPhoto} />
-            <p className="message">All your dreams can come true<br />if you have the courage to pursue them</p>
+            {/*<p className="message">All your dreams can come true<br />if you have the courage to pursue them</p>*/}
             {
                 itemsCount.map(key=> <CircleContainer key={key}/>)
             }
