@@ -1,6 +1,4 @@
-const HOST = document.location.origin
-    .replace(/^https/, 'wss')
-    .replace(/^http/, 'ws')
+const HOST = document.location.origin.replace(/^http/, 'ws')
 
 const WEBSOCKET_SERVER_ADDR = process.env.REACT_APP_WEBSOCKET_SERVER_ADDR || HOST
 
