@@ -4,7 +4,7 @@
     "express": "^4.17.2",
     "ws": "^8.4.0"
   },
-  "script": {
+  "scripts": {
     "start": "make RunServer",
     "build": "date",
     "heroku-postbuild": "make BuildUI"
