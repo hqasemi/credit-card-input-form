@@ -8,7 +8,7 @@ function DateInput({formik}) {
     return (
         <InputMask
             mask="99/99"
-            maskChar=" "
+            maskChar="-"
             value={getIn(formik.values, "expirationDate")}
             onChange={formik.handleChange}
             // TODO: fix maxLength

@@ -1,7 +1,7 @@
 # Credit card input form
-
-## Demo link:
-
+This project is a simple credit card input form
+## Online demo link:
+[https://credit-card-input-form.herokuapp.com](https://credit-card-input-form.herokuapp.com/)
 ## Assumptions:
 
 - Client-Server connection is websocket.

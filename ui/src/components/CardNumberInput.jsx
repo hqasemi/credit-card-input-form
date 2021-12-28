@@ -9,7 +9,7 @@ function CardNumberInput({formik}) {
     return (
         <InputMask
             mask="9999 9999 9999 9999"
-            maskChar=" "
+            maskChar="-"
             value={formik.values.cardNumber}
             onChange={formik.handleChange}
             inputProps={{
