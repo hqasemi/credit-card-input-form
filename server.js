@@ -1,18 +1,36 @@
-import {WebSocketServer} from 'ws';
-import path from "path";
-import express from "express";
+const {Server} = require('ws');
+const path = require('path');
+const express = require('express');
 
-const WEB_SOCKET_SERVER_PORT = 8081
-const EXPRESS_SERVER_PORT = process.env.PORT ||80
 
-const wss = new WebSocketServer({port: WEB_SOCKET_SERVER_PORT});
+// const WEB_SOCKET_SERVER_PORT = 8081
+const EXPRESS_SERVER_PORT = process.env.PORT || 80
 
-export const SERVER_HELLO = 'SERVER_HELLO';
 
-export const POST_PAYMENT_INFO = 'POST_PAYMENT_INFO';
-export const POST_PAYMENT_INFO_FAILURE = 'POST_PAYMENT_INFO_FAILURE';
-export const POST_PAYMENT_INFO_SUCCESS = 'POST_PAYMENT_INFO_SUCCESS';
+const SERVER_HELLO = 'SERVER_HELLO';
 
+const POST_PAYMENT_INFO = 'POST_PAYMENT_INFO';
+const POST_PAYMENT_INFO_FAILURE = 'POST_PAYMENT_INFO_FAILURE';
+const POST_PAYMENT_INFO_SUCCESS = 'POST_PAYMENT_INFO_SUCCESS';
+
+
+//  ------------------------------------------ Server React APP ----------------------------------------------
+// const __dirname = path.resolve();
+const server = express();
+
+//This will create a middleware.
+//When you navigate to the root page, it would use the built react-app
+server.use(express.static(path.resolve(__dirname, "./ui/build")));
+server.listen(EXPRESS_SERVER_PORT, () =>
+    console.log(`Example app listening on port ${EXPRESS_SERVER_PORT}!`),
+);
+//  ----------------------------------------------------------------------------------------------------------
+
+// Development
+// const wss = new WebSocketServer({port: WEB_SOCKET_SERVER_PORT});
+
+// reference: https://devcenter.heroku.com/articles/node-websockets#create-a-websocket-server
+const wss = new Server({server});
 
 wss.on('connection', function connection(ws) {
     ws.on('message', function message(dataFromClient) {
@@ -63,15 +81,3 @@ const convertCurrency = (data) => data.currency === "USD" ? data.amountToBePaid 
  */
 const isRequestSuccessful = (data) => String(data.cardNumber)[15] === "5"
 
-
-//  ------------------------------------------ Server React APP ----------------------------------------------
-const __dirname = path.resolve();
-const app = express();
-
-//This will create a middleware.
-//When you navigate to the root page, it would use the built react-app
-app.use(express.static(path.resolve(__dirname, "./ui/build")));
-app.listen(EXPRESS_SERVER_PORT, () =>
-    console.log(`Example app listening on port ${EXPRESS_SERVER_PORT}!`),
-);
-//  ----------------------------------------------------------------------------------------------------------

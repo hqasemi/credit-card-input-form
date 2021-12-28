@@ -1,5 +1,4 @@
 {
-  "type": "module",
   "engines": {
     "node": "14.18.2"
   },
