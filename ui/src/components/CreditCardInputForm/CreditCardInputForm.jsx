@@ -14,7 +14,9 @@ import CreditScoreIcon from '@mui/icons-material/CreditScore';
 import {makeStyles} from "@mui/styles";
 
 import {validationSchema} from "./validationSchema"
-import {startWebsocket} from "../websocket"
+
+// TODO: use redux and change using websocket method
+import {startWebsocket} from "../../websocket"
 import RePaymentIcon from '@mui/icons-material/Autorenew';
 import DateInput from './DateInput'
 import SecurityCodeInput from './SecurityCodeInput'
