@@ -4,6 +4,7 @@ import {lightTheme,} from "./theme";
 import {Box, CssBaseline, ThemeProvider} from "@mui/material";
 import CreditCardInputForm from "./components/CreditCardInputForm";
 import Container from '@mui/material/Container';
+import {AnimatedBackground} from "./components/AnimatedBackground/AnimatedBackground";
 
 function App() {
     // const [isThemeLight, setIsThemeLight] = useState(true);
@@ -11,10 +12,11 @@ function App() {
         // TODO: Support dark theme.
         // <ThemeProvider theme={isThemeLight ? lightTheme : darkTheme}>
         <ThemeProvider theme={lightTheme}>
-            <Container style={{paddingTop: "40px",paddingBottom: "40px"}}>
+            <AnimatedBackground/>
+            <Container style={{paddingTop: "40px", paddingBottom: "40px"}}>
                 {/*<Box >*/}
-                    <CssBaseline/>
-                    <CreditCardInputForm/>
+                <CssBaseline/>
+                <CreditCardInputForm/>
 
                 {/*</Box>*/}
             </Container>
