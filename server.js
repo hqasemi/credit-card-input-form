@@ -1,23 +1,22 @@
-const {Server} = require('ws');
+// const {Server} = require('ws');
 const path = require('path');
 const express = require('express');
 const server = express();
 const expressWs = require('express-ws')(server);
 const cors = require('cors')
 
-// const WEB_SOCKET_SERVER_PORT = 8081
+const CURRENCY_EXCHANGE_RATE_USD_TO_ORM = 0.39
+
 const EXPRESS_SERVER_PORT = process.env.PORT || 80
 
-
+// Websocket events
 const SERVER_HELLO = 'SERVER_HELLO';
-
 const POST_PAYMENT_INFO = 'POST_PAYMENT_INFO';
 const POST_PAYMENT_INFO_FAILURE = 'POST_PAYMENT_INFO_FAILURE';
 const POST_PAYMENT_INFO_SUCCESS = 'POST_PAYMENT_INFO_SUCCESS';
 
 
 //  ------------------------------------------ Server React APP ----------------------------------------------
-// const __dirname = path.resolve();
 
 //This will create a middleware.
 //When you navigate to the root page, it would use the built react-app
@@ -28,17 +27,12 @@ server.listen(EXPRESS_SERVER_PORT, () =>
 );
 //  ----------------------------------------------------------------------------------------------------------
 
-// Development
-// const wss = new WebSocketServer({port: WEB_SOCKET_SERVER_PORT});
-
 console.log("Trying to run a websocket server...")
-// reference: https://devcenter.heroku.com/articles/node-websockets#create-a-websocket-server
-// didn't work
-// const wss = new Server({server});
-//try another way: https://stackoverflow.com/questions/68799988/cannot-connect-to-websocket-server-in-heroku
+// The reference following reference didnt' work:
+// https://devcenter.heroku.com/articles/node-websockets#create-a-websocket-server
+//tried another way: https://stackoverflow.com/questions/68799988/cannot-connect-to-websocket-server-in-heroku
 
 server.ws('/', function (ws, req) {
-// wss.on('connection', function connection(ws) {
     ws.on('message', function message(dataFromClient) {
         const jsonData = JSON.parse(dataFromClient)
         console.log('received: %s', jsonData.data);
@@ -77,7 +71,7 @@ server.ws('/', function (ws, req) {
     };
 });
 
-const convertCurrency = (data) => data.currency === "USD" ? data.amountToBePaid * 0.39 : data.amountToBePaid
+const convertCurrency = (data) => data.currency === "USD" ? data.amountToBePaid * CURRENCY_EXCHANGE_RATE_USD_TO_ORM : data.amountToBePaid
 
 /**
  * Assumption:
