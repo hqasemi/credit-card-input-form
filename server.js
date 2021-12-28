@@ -3,7 +3,7 @@ import path from "path";
 import express from "express";
 
 const WEB_SOCKET_SERVER_PORT = 8081
-const EXPRESS_SERVER_PORT = 80
+const EXPRESS_SERVER_PORT = 443
 
 const wss = new WebSocketServer({port: WEB_SOCKET_SERVER_PORT});
 
