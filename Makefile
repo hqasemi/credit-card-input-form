@@ -1,5 +1,5 @@
 BuildUI:
-	cd ui && yarn build
+	cd ui && yarn install && yarn build
 
 RunUIDev:
 	cd ui && yarn
