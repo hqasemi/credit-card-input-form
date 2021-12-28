@@ -6,6 +6,6 @@
   },
   "script": {
     "start": "make RunServer",
-    "heroku-postbuild": "make BuildUI && make RunUIProduction"
+    "heroku-postbuild": "make BuildUI"
   }
 }
