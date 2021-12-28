@@ -1,6 +1,7 @@
 import TextField from "@mui/material/TextField";
 import React from "react";
 import {connect, getIn} from 'formik';
+import PropTypes from "prop-types";
 
 function SecurityCodeInput({formik}) {
     return (
@@ -19,4 +20,10 @@ function SecurityCodeInput({formik}) {
     )
 }
 
+
+SecurityCodeInput.propTypes = {
+    formik: PropTypes.object,
+};
+
 export default connect(SecurityCodeInput);
+

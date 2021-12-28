@@ -172,11 +172,11 @@ const CreditCardInputForm = () => {
                             initialValues={{
                                 expirationDate: '',
                                 cardHolderName: '',
-                                cardNumber: null,
+                                cardNumber: '',
                                 amountToBePaid: '',
                                 currency: 'OMR',
                                 areCardDetailsSave: false,
-                                securityCode: null,
+                                securityCode: '',
                             }}
                             validationSchema={validationSchema}
                             onSubmit={(values, {setSubmitting, resetForm}) => {

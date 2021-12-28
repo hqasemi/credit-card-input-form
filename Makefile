@@ -9,4 +9,4 @@ RunUIProduction:
 	cd ui && serve -s build
 
 RunServer:
-	node websocket_server.js
+	node backend/websocket_server.js

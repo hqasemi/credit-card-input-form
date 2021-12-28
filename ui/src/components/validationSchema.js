@@ -61,7 +61,7 @@ export const validationSchema = yup.object({
             .number('Enter your Card number')
             .required('Card number is required')
             //reference: https://stackoverflow.com/questions/49886881/validation-using-yup-to-check-string-or-number-length
-            .test('len', 'Card number needs to be exactly 16 digits', val => val.toString().length === 16)
+            .test('len', 'Card number needs to be exactly 16 digits', val => val && val.toString().length === 16)
             .typeError("Card number is not valid"),
         expirationDate: yup
             .date()
@@ -92,7 +92,7 @@ export const validationSchema = yup.object({
         securityCode: yup
             .number('Enter your Security code')
             .required('Security code is required')
-            .test('len', 'Security code needs to be exactly 3 digits', val => val.toString().length === 3)
+            .test('len', 'Security code needs to be exactly 3 digits', val => val && val.toString().length === 3)
             .typeError("Security Code is not valid"),
         amountToBePaid: yup
             .number('Enter the amount that you want to be paid')

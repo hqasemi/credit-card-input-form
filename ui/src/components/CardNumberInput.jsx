@@ -2,6 +2,7 @@ import InputMask from "react-input-mask";
 import TextField from "@mui/material/TextField";
 import React from "react";
 import {connect} from 'formik';
+import PropTypes from "prop-types";
 
 
 function CardNumberInput({formik}) {
@@ -9,7 +10,7 @@ function CardNumberInput({formik}) {
         <InputMask
             mask="9999 9999 9999 9999"
             maskChar=" "
-            value={formik.values.cardNumber || ''}
+            value={formik.values.cardNumber}
             onChange={formik.handleChange}
             inputProps={{
                 maxLength: 16,
@@ -26,9 +27,13 @@ function CardNumberInput({formik}) {
                         helperText={formik.touched.cardNumber && formik.errors.cardNumber}
                     />
             }
-
         </InputMask>
     )
 }
+
+CardNumberInput.propTypes = {
+    formik: PropTypes.object,
+};
+
 
 export default connect(CardNumberInput);

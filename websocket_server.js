@@ -1,4 +1,6 @@
 import {WebSocketServer} from 'ws';
+import path from "path";
+import express from "express";
 
 const wss = new WebSocketServer({port: 8081});
 
@@ -7,6 +9,7 @@ export const SERVER_HELLO = 'SERVER_HELLO';
 export const POST_PAYMENT_INFO = 'POST_PAYMENT_INFO';
 export const POST_PAYMENT_INFO_FAILURE = 'POST_PAYMENT_INFO_FAILURE';
 export const POST_PAYMENT_INFO_SUCCESS = 'POST_PAYMENT_INFO_SUCCESS';
+
 
 wss.on('connection', function connection(ws) {
     ws.on('message', function message(dataFromClient) {
@@ -55,4 +58,17 @@ const convertCurrency = (data) => data.currency === "USD" ? data.amountToBePaid 
  * @param data
  * @returns {boolean}
  */
-const isRequestSuccessful = (data) => String(data.number)[15] === "5"
+const isRequestSuccessful = (data) => String(data.cardNumber)[15] === "5"
+
+
+//  ------------------------------------------ Server React APP ----------------------------------------------
+const __dirname = path.resolve();
+const app = express();
+
+//This will create a middleware.
+//When you navigate to the root page, it would use the built react-app
+app.use(express.static(path.resolve(__dirname, "./ui/build")));
+app.listen(3001, () =>
+    console.log('Example app listening on port 3000!'),
+);
+//  ----------------------------------------------------------------------------------------------------------

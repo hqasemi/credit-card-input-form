@@ -2,6 +2,7 @@ import InputMask from "react-input-mask";
 import TextField from "@mui/material/TextField";
 import React from "react";
 import {connect, getIn} from 'formik';
+import PropTypes from "prop-types";
 
 function DateInput({formik}) {
     return (
@@ -11,7 +12,9 @@ function DateInput({formik}) {
             value={getIn(formik.values, "expirationDate")}
             onChange={formik.handleChange}
             // TODO: fix maxLength
-            inputProps={{maxLength: 5,}}
+            inputProps={{
+                maxLength: 5,
+            }}
         >
             {
                 () =>
@@ -23,9 +26,15 @@ function DateInput({formik}) {
                         error={formik.touched.expirationDate && Boolean(formik.errors.expirationDate)}
                         helperText={formik.touched.expirationDate && formik.errors.expirationDate}
 
-                    />}
+                    />
+            }
         </InputMask>
     )
 }
+
+
+DateInput.propTypes = {
+    formik: PropTypes.object,
+};
 
 export default connect(DateInput);

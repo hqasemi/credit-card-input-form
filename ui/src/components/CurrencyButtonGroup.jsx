@@ -2,6 +2,7 @@ import React from "react";
 import {connect} from 'formik';
 import Button from "@mui/material/Button";
 import {ButtonGroup} from "@mui/material";
+import PropTypes from "prop-types";
 
 function CurrencyButtonGroup({formik, onClickCallback}) {
     return (
@@ -25,5 +26,11 @@ function CurrencyButtonGroup({formik, onClickCallback}) {
         </ButtonGroup>
     )
 }
+
+
+CurrencyButtonGroup.propTypes = {
+    formik: PropTypes.object,
+    onClickCallback: PropTypes.func,
+};
 
 export default connect(CurrencyButtonGroup);

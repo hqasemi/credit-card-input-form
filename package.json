@@ -1,6 +1,11 @@
 {
   "type": "module",
   "dependencies": {
+    "express": "^4.17.2",
     "ws": "^8.4.0"
+  },
+  "script": {
+    "start": "make RunServer",
+    "heroku-postbuild": "make BuildUI && make RunUIProduction"
   }
 }
