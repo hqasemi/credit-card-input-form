@@ -35,7 +35,7 @@ const WEBSOCKET_RECONNECT_INTERVAL_IN_MS = process.env.REACT_APP_WEBSOCKET_RECON
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        // height: '100vh',
+        height: '100vh',
     },
     paper: {
         alignItems: 'center',
