@@ -1,7 +1,9 @@
 const {Server} = require('ws');
 const path = require('path');
 const express = require('express');
-
+const server = express();
+const expressWs = require('express-ws')(server);
+const cors = require('cors')
 
 // const WEB_SOCKET_SERVER_PORT = 8081
 const EXPRESS_SERVER_PORT = process.env.PORT || 80
@@ -16,11 +18,11 @@ const POST_PAYMENT_INFO_SUCCESS = 'POST_PAYMENT_INFO_SUCCESS';
 
 //  ------------------------------------------ Server React APP ----------------------------------------------
 // const __dirname = path.resolve();
-const server = express();
 
 //This will create a middleware.
 //When you navigate to the root page, it would use the built react-app
 server.use(express.static(path.resolve(__dirname, "./ui/build")));
+server.use(cors());
 server.listen(EXPRESS_SERVER_PORT, () =>
     console.log(`Example app listening on port ${EXPRESS_SERVER_PORT}!`),
 );
@@ -31,9 +33,11 @@ server.listen(EXPRESS_SERVER_PORT, () =>
 
 console.log("Trying to run a websocket server...")
 // reference: https://devcenter.heroku.com/articles/node-websockets#create-a-websocket-server
-const wss = new Server({server});
+// didn't work
+// const wss = new Server({server});
 
-wss.on('connection', function connection(ws) {
+server.ws('/', function (ws, req) {
+// wss.on('connection', function connection(ws) {
     ws.on('message', function message(dataFromClient) {
         const jsonData = JSON.parse(dataFromClient)
         console.log('received: %s', jsonData.data);
