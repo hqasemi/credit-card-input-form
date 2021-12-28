@@ -7,7 +7,7 @@ const cors = require('cors')
 
 const CURRENCY_EXCHANGE_RATE_USD_TO_ORM = 0.39
 
-const EXPRESS_SERVER_PORT = process.env.PORT || 80
+const EXPRESS_SERVER_PORT = process.env.PORT || 3000
 
 // Websocket events
 const SERVER_HELLO = 'SERVER_HELLO';
