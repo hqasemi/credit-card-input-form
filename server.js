@@ -29,6 +29,7 @@ server.listen(EXPRESS_SERVER_PORT, () =>
 // Development
 // const wss = new WebSocketServer({port: WEB_SOCKET_SERVER_PORT});
 
+console.log("Trying to run a websocket server...")
 // reference: https://devcenter.heroku.com/articles/node-websockets#create-a-websocket-server
 const wss = new Server({server});
 
