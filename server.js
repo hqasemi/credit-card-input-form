@@ -35,6 +35,7 @@ console.log("Trying to run a websocket server...")
 // reference: https://devcenter.heroku.com/articles/node-websockets#create-a-websocket-server
 // didn't work
 // const wss = new Server({server});
+//try another way: https://stackoverflow.com/questions/68799988/cannot-connect-to-websocket-server-in-heroku
 
 server.ws('/', function (ws, req) {
 // wss.on('connection', function connection(ws) {

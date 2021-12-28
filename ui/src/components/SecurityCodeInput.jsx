@@ -7,6 +7,7 @@ function SecurityCodeInput({formik}) {
     return (
         <TextField
             fullWidth
+            size="small"
             type="password"
             id="securityCode"
             name="securityCode"

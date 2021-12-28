@@ -35,7 +35,7 @@ const WEBSOCKET_RECONNECT_INTERVAL_IN_MS = process.env.REACT_APP_WEBSOCKET_RECON
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        height: '100vh',
+        // height: '100vh',
     },
     paper: {
         alignItems: 'center',
@@ -55,9 +55,9 @@ const useStyles = makeStyles((theme) => ({
     whiteTransparentBG: {
         backgroundColor: "#ffffffcf",
         [theme.breakpoints.up('md')]: {
-            padding: "30px 30px 55px",
+            padding: "20px 20px 35px",
         }, [theme.breakpoints.down('sm')]: {
-            padding: "0px 0px 55px",
+            padding: "0px 0px 35px",
         },
     },
     stickRight: {
@@ -208,6 +208,7 @@ const CreditCardInputForm = () => {
                                 <Form onSubmit={handleSubmit}>
                                     <TextField
                                         fullWidth
+                                        size="small"
                                         id="cardHolderName"
                                         name="cardHolderName"
                                         label="Card holder name"
@@ -236,6 +237,7 @@ const CreditCardInputForm = () => {
                                     </Grid>
                                     <TextField
                                         fullWidth
+                                        size="small"
                                         id="amountToBePaid"
                                         name="amountToBePaid"
                                         label={`Amount to be paid (${values.currency})`}
@@ -268,7 +270,7 @@ const CreditCardInputForm = () => {
                                         </Grid>
                                     </Grid>
 
-                                    <Button color="primary" variant="contained" fullWidth type="submit">
+                                    <Button size="small" color="primary" variant="contained" fullWidth type="submit">
                                         Submit
                                     </Button>
                                 </Form>

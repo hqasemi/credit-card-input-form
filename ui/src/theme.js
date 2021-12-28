@@ -14,6 +14,14 @@ export const lightTheme = createTheme({
             styleOverrides: {
                 root: {
                     marginBottom: 20,
+                     // height: '40px'
+                },
+            }
+        },
+        MuiInputBase: {
+            styleOverrides: {
+                root: {
+                     // height: '40px'
                 },
             }
         },
@@ -37,9 +45,6 @@ export const lightTheme = createTheme({
                     border: "1px solid #5d1899",
                     borderRadius: 15,
                 },
-                // containedPrimary: {
-                //     backgroundColor: "#5d1899",
-                // }
             },
         },
         MuiButton: {
@@ -53,9 +58,6 @@ export const lightTheme = createTheme({
                     fontWeight: 700,
                     transition: "background-color .2s ease-in-out",
                 },
-                // containedPrimary: {
-                //     backgroundColor: "#5d1899",
-                // }
             },
         },
         MuiOutlinedInput: {
@@ -66,9 +68,6 @@ export const lightTheme = createTheme({
                 root: {
                     borderRadius: 15,
                 },
-                // containedPrimary: {
-                //     backgroundColor: "#5d1899",
-                // }
             },
         },
         MuiFormHelperText: {
@@ -80,16 +79,10 @@ export const lightTheme = createTheme({
             styleOverrides: {
                 container: {
                     marginBottom: 20,
+                    marginTop: 20,
                 },
             },
         },
-        // MuiSvgIcon: {
-        //     styleOverrides: {
-        //         root: {
-        //             color: "primary"
-        //         },
-        //     },
-        // }
     }
 });
 

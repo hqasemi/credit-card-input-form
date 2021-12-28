@@ -20,12 +20,12 @@ function DateInput({formik}) {
                 () =>
                     <TextField
                         fullWidth
+                        size="small"
                         id="expirationDate"
                         name="expirationDate"
                         label="Expiration date (MM/YY)"
                         error={formik.touched.expirationDate && Boolean(formik.errors.expirationDate)}
                         helperText={formik.touched.expirationDate && formik.errors.expirationDate}
-
                     />
             }
         </InputMask>

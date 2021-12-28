@@ -22,6 +22,7 @@ function CardNumberInput({formik}) {
                         id="cardNumber"
                         name="cardNumber"
                         label="Card number"
+                        size="small"
                         fullWidth
                         error={formik.touched.cardNumber && Boolean(formik.errors.cardNumber)}
                         helperText={formik.touched.cardNumber && formik.errors.cardNumber}

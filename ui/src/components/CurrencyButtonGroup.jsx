@@ -6,9 +6,10 @@ import PropTypes from "prop-types";
 
 function CurrencyButtonGroup({formik, onClickCallback}) {
     return (
-        <ButtonGroup>
+        <ButtonGroup >
             <Button
                 color="primary"
+                size="small"
                 variant={formik.values.currency === "OMR" ? "contained" : "standard"}
                 value={"OMR"}
                 onClick={onClickCallback}
@@ -17,6 +18,7 @@ function CurrencyButtonGroup({formik, onClickCallback}) {
             </Button>
             <Button
                 color="primary"
+                size="small"
                 variant={formik.values.currency !== "OMR" ? "contained" : "standard"}
                 value={"USD"}
                 onClick={onClickCallback}
