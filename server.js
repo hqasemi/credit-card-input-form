@@ -41,7 +41,7 @@ server.ws('/', function (ws, req) {
         const data = jsonData.data
 
         if (event === POST_PAYMENT_INFO) {
-            if (isRequestSuccessful(data)) {
+            if (!isRequestSuccessful(data)) {
                 console.error("invalid card number")
                 const serverResponse = {
                     event: POST_PAYMENT_INFO_FAILURE,
@@ -75,9 +75,12 @@ const convertCurrency = (data) => data.currency === "USD" ? data.amountToBePaid 
 
 /**
  * Assumption:
- *    if the last 1 digit of the card is ‘5’ then the result is always failure, otherwise success.
+ *    if the last digit of the card is ‘5’ then the result is always failure, otherwise success.
  * @param data
  * @returns {boolean}
  */
-const isRequestSuccessful = (data) => String(data.cardNumber)[15] === "5"
+const isRequestSuccessful = (data) => {
+    let numberOfSpaces = 3 //e.g.: 1234 1234 1234 1234
+    return String(data.cardNumber)[15 + numberOfSpaces] !== "5"
+}
 
